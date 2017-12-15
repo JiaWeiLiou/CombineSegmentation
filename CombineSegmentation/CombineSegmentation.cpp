@@ -244,6 +244,23 @@ int main()
 	string  objectCOM_I_file = filepath + "\\" + infilename + "_14.2_COM_O(I).png";			//結合面與線(疊圖)
 	imwrite(objectCOM_I_file, objectCOM_I_out);
 
+	/*侵蝕運算*/
+
+	Mat objectErode;
+	Mat element = getStructuringElement(MORPH_ELLIPSE, Size(5, 5));
+	erode(objectCOM, objectErode, element);
+
+	Mat objectErode_L_out, objectErode_I_out;			//輸出用(8UC3、8UC3)
+	DrawLabel(objectErode, objectErode_L_out);
+	DrawEdge(objectErode, image, objectErode_I_out);
+
+	string  objectErode_B_file = filepath + "\\" + infilename + "_15.0_Erode_O(B).png";			//侵蝕運算(二值)
+	imwrite(objectErode_B_file, objectErode);
+	string  objectErode_L_file = filepath + "\\" + infilename + "_15.1_Erode_O(L).png";			//侵蝕運算(標籤)
+	imwrite(objectErode_L_file, objectErode_L_out);
+	string  objectErode_I_file = filepath + "\\" + infilename + "_15.2_Erode_O(I).png";			//侵蝕運算(疊圖)
+	imwrite(objectErode_I_file, objectErode_I_out);
+
 	///*分水嶺演算法切割*/
 
 	return 0;
