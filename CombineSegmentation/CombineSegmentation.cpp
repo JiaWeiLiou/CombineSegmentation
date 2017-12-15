@@ -111,7 +111,7 @@ int main()
 
 	/*基於面的切割結果*/
 
-	Mat area = areaCB;			//基於面的切割結果(8UC1(BW))
+	Mat area = grayTH;			//基於面的切割結果(8UC1(BW))
 
 	Mat area_L, area_I;			//輸出用(8UC3、8UC3)
 	DrawLabel(area, area_L);
@@ -213,7 +213,7 @@ int main()
 	/*基於線的切割結果*/
 
 	Mat line;			//基於線的切割結果(8UC1(BW))
-	BWReverse(lineCN, line);
+	BWReverse(lineHC, line);
 
 	Mat line_L, line_I;			//輸出用(8UC3、8UC3)
 	DrawLabel(line, line_L);
