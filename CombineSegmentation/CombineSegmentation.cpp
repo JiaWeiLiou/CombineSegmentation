@@ -90,7 +90,7 @@ int main()
 	Mat grayTH;			//二值化灰階影像(8UC1(BW))
 	threshold(grayDIV, grayTH, 150, 255, THRESH_BINARY);
 
-	string grayTH_B_file = filepath + "\\" + infilename + "_3_TH_I(B).png";			//二值化灰階影像(二值)
+	string grayTH_B_file = filepath + "\\" + infilename + "_3.0_TH_I(B).png";			//二值化灰階影像(二值)
 	imwrite(grayTH_B_file, grayTH);
 
 	/*去除面白色雜訊*/
@@ -98,7 +98,7 @@ int main()
 	Mat areaCW;			//去除面白色雜訊(8UC1(BW))
 	ClearNoise(grayTH, areaCW, 5, 4, 1);
 
-	string areaCW_B_file = filepath + "\\" + infilename + "_4_CW_A(B).png";			//去除面白色雜訊(二值)
+	string areaCW_B_file = filepath + "\\" + infilename + "_4.0_CW_A(B).png";			//去除面白色雜訊(二值)
 	imwrite(areaCW_B_file, areaCW);
 
 	/*去除面黑色雜訊*/
@@ -106,7 +106,7 @@ int main()
 	Mat areaCB;			//去除面黑色雜訊(8UC1(BW))
 	ClearNoise(areaCW, areaCB, 5, 4, 0);
 
-	string areaCB_B_file = filepath + "\\" + infilename + "_5_CB_A(B).png";			//去除面黑色雜訊(二值)
+	string areaCB_B_file = filepath + "\\" + infilename + "_5.0_CB_A(B).png";			//去除面黑色雜訊(二值)
 	imwrite(areaCB_B_file, areaCB);
 
 	/*基於面的切割結果*/
@@ -191,7 +191,7 @@ int main()
 	Mat gradmHT;			//二值化梯度幅值(8UC1(BW))
 	threshold(gradmDIV, gradmHT, 1, 255, THRESH_BINARY);
 
-	string gradmHT_B_file = filepath + "\\" + infilename + "_10_HT_M(B).png";			//二值化梯度幅值(二值)
+	string gradmHT_B_file = filepath + "\\" + infilename + "_10.0_HT_M(B).png";			//二值化梯度幅值(二值)
 	imwrite(gradmHT_B_file, gradmHT);
 
 	/*滯後切割線*/
@@ -199,7 +199,7 @@ int main()
 	Mat lineHC;			//滯後切割線(8UC1(BW))
 	HysteresisCut(gradmHT, area, lineHC);
 
-	string lineHC_B_file = filepath + "\\" + infilename + "_11_HC_L(B).png";			//滯後切割線(二值)
+	string lineHC_B_file = filepath + "\\" + infilename + "_11.0_HC_L(B).png";			//滯後切割線(二值)
 	imwrite(lineHC_B_file, lineHC);
 
 	/*去除線雜訊*/
@@ -207,7 +207,7 @@ int main()
 	Mat lineCN;			//去除線雜訊(8UC1(BW))
 	ClearNoise(lineHC, lineCN, 5, 4, 1);
 
-	string lineCN_B_file = filepath + "\\" + infilename + "_12_CN_L(B).png";			//去除線雜訊(二值)
+	string lineCN_B_file = filepath + "\\" + infilename + "_12.0_CN_L(B).png";			//去除線雜訊(二值)
 	imwrite(lineCN_B_file, lineCN);
 
 	/*基於線的切割結果*/
@@ -233,35 +233,49 @@ int main()
 	Mat objectCOM;			//結合面與線(8UC1(BW))
 	BWCombine(area, line, objectCOM);
 
-	Mat objectCOM_L_out, objectCOM_I_out;			//輸出用(8UC3、8UC3)
-	DrawLabel(objectCOM, objectCOM_L_out);
-	DrawEdge(objectCOM, image, objectCOM_I_out);
+	Mat objectCOM_L, objectCOM_I;			//輸出用(8UC3、8UC3)
+	DrawLabel(objectCOM, objectCOM_L);
+	DrawEdge(objectCOM, image, objectCOM_I);
 
 	string  objectCOM_B_file = filepath + "\\" + infilename + "_14.0_COM_O(B).png";			//結合面與線(二值)
 	imwrite(objectCOM_B_file, objectCOM);
 	string  objectCOM_L_file = filepath + "\\" + infilename + "_14.1_COM_O(L).png";			//結合面與線(標籤)
-	imwrite(objectCOM_L_file, objectCOM_L_out);
+	imwrite(objectCOM_L_file, objectCOM_L);
 	string  objectCOM_I_file = filepath + "\\" + infilename + "_14.2_COM_O(I).png";			//結合面與線(疊圖)
-	imwrite(objectCOM_I_file, objectCOM_I_out);
+	imwrite(objectCOM_I_file, objectCOM_I);
 
-	/*侵蝕運算*/
+	/*開運算*/
 
-	Mat objectErode;
+	Mat objectOpen;
 	Mat element = getStructuringElement(MORPH_ELLIPSE, Size(5, 5));
-	erode(objectCOM, objectErode, element);
+	morphologyEx(objectCOM, objectOpen, MORPH_OPEN, element);
 
-	Mat objectErode_L_out, objectErode_I_out;			//輸出用(8UC3、8UC3)
-	DrawLabel(objectErode, objectErode_L_out);
-	DrawEdge(objectErode, image, objectErode_I_out);
+	Mat objectOpen_L, objectOpen_I;			//輸出用(8UC3、8UC3)
+	DrawLabel(objectOpen, objectOpen_L);
+	DrawEdge(objectOpen, image, objectOpen_I);
 
-	string  objectErode_B_file = filepath + "\\" + infilename + "_15.0_Erode_O(B).png";			//侵蝕運算(二值)
-	imwrite(objectErode_B_file, objectErode);
-	string  objectErode_L_file = filepath + "\\" + infilename + "_15.1_Erode_O(L).png";			//侵蝕運算(標籤)
-	imwrite(objectErode_L_file, objectErode_L_out);
-	string  objectErode_I_file = filepath + "\\" + infilename + "_15.2_Erode_O(I).png";			//侵蝕運算(疊圖)
-	imwrite(objectErode_I_file, objectErode_I_out);
+	string  objectOpen_B_file = filepath + "\\" + infilename + "_15.0_OPEN_O(B).png";			//開運算(二值)
+	imwrite(objectOpen_B_file, objectOpen);
+	string  objectOpen_L_file = filepath + "\\" + infilename + "_15.1_OPEN_O(L).png";			//開運算(標籤)
+	imwrite(objectOpen_L_file, objectOpen_L);
+	string  objectOpen_I_file = filepath + "\\" + infilename + "_15.2_OPEN_O(I).png";			//開運算(疊圖)
+	imwrite(objectOpen_I_file, objectOpen_I);
 
-	///*分水嶺演算法切割*/
+	///*分水嶺演算法*/
+
+	//Mat objectWS;		//分水嶺演算法(32SC1(BW))
+	//BWWatershed(image, objectOpen, area, objectWS);
+
+	//Mat objectWS_L, objectWS_I;		//輸出用(8UC3、8UC3)
+	//DrawLabel(objectWS, objectWS_L);
+	//DrawEdge(objectWS, image, objectWS_I);
+
+	//string  objectWS_B_file = filepath + "\\" + infilename + "_16.0_WS_O(B).png";			//分水嶺演算法(二值)
+	//imwrite(objectWS_B_file, objectWS);
+	//string  objectWS_L_file = filepath + "\\" + infilename + "_16.1_WS_O(L).png";			//分水嶺演算法(標籤)
+	//imwrite(objectWS_L_file, objectWS_L);
+	//string  objectWS_I_file = filepath + "\\" + infilename + "_16.2_WS_O(I).png";			//分水嶺演算法(疊圖)
+	//imwrite(objectWS_I_file, objectWS_I);
 
 	return 0;
 }
