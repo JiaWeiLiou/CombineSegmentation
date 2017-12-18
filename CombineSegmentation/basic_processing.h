@@ -111,6 +111,9 @@ void ConnectLine(InputArray _gradm, InputArray _gradd, OutputArray _gradmCL, Out
 /*滯後閥值*/
 void HysteresisThreshold(InputArray _gradm, OutputArray _bwLine, int upperThreshold = 150, int lowerThreshold = 50);
 
+/*影像處理*/
+void ImageProcess(InputArray _image, OutputArray _imageIP);
+
 /*二值清除孤立點*/
 //  iter -- 刪除次數
 //  flagT = 0 -> 清除孤立點
@@ -137,3 +140,6 @@ void BWReverse(InputArray _bwImage, OutputArray _bwImageR);
 
 /*分水嶺演算法*/
 void BWWatershed(InputArray _srcImage, InputArray _bwSeed, InputArray _bwObject, OutputArray _bwWatershed);
+
+/*分水嶺轉換*/
+void WatershedTransform(InputArray _srcImage, OutputArray _bwWatershed);

@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "basic_processing.h"
+#include "watershed.h"
 #include <iostream>
 #include <opencv2/opencv.hpp>  
 #include <cmath>
@@ -27,6 +28,10 @@ int main()
 	std::cin >> blurLineSize;
 
 	if (blurLineSize % 2 == 0) { --blurLineSize; }
+
+	std::cout << "Please enter segmentational size for Seed : ";
+	int seedSize = 0;
+	std::cin >> seedSize;
 
 	/*設定輸出文件名*/
 
@@ -261,20 +266,66 @@ int main()
 	string  objectOpen_I_file = filepath + "\\" + infilename + "_15.2_OPEN_O(I).png";			//開運算(疊圖)
 	imwrite(objectOpen_I_file, objectOpen_I);
 
+	/*距離轉換*/
+
+	Mat objectDT;		//距離轉換(32FC1(BW))
+	distanceTransform(objectOpen, objectDT, CV_DIST_L2, 3);
+
+	Mat objectDT_G, objectDT_R;		//輸出用(8UC1)
+	DrawGrayBar(objectDT, objectDT_G);
+	DrawColorBar(objectDT, objectDT_R);
+
+	string objectDT_G_file = filepath + "\\" + infilename + "_16.0_DT_O(G).png";			//距離轉換(灰階)
+	imwrite(objectDT_G_file, objectDT_G);
+	string objectDT_R_file = filepath + "\\" + infilename + "_16.1_DT_O(R).png";			//距離轉換(藍紅)
+	imwrite(objectDT_R_file, objectDT_R);
+
+	/*測試*/
+
+	for (int i = 0; i < objectDT.rows; ++i)
+		for (int j = 0; j < objectDT.cols; ++j)
+			objectDT.at<float>(i, j) = -objectDT.at<float>(i, j);
+
+	Mat objectWT;
+	Mat label;
+	WatershedTransform(objectDT, objectWT, label);
+	string objectWT_B_file = filepath + "\\" + infilename + "_17.1_WT_O(L).png";			//分水嶺轉換(二值)
+	imwrite(objectWT_B_file, objectWT);
+
+
+	///*種子點切割*/
+
+	//Mat objectSeed;			//種子點切割(8UC1(BW))
+	//threshold(objectDT, objectSeed, seedSize, 255, THRESH_BINARY);
+	//objectSeed.convertTo(objectSeed, CV_8UC1);
+	//ClearNoise(objectSeed, objectSeed, 30, 4, 1);
+	////objectSeed = imread(filepath + "\\" + "mask.png", 0);
+
+	//Mat objectSeed_L;			//輸出用(8UC3)
+	//DrawLabel(objectSeed, objectSeed_L);
+
+	//string objectSeed_B_file = filepath + "\\" + infilename + "_17.0_SEED_O(B).png";			//種子點切割(二值)
+	//imwrite(objectSeed_B_file, objectSeed);
+	//string objectSeed_L_file = filepath + "\\" + infilename + "_17.1_SEED_O(L).png";			//種子點切割(標籤)
+	//imwrite(objectSeed_L_file, objectSeed_L);
+
 	///*分水嶺演算法*/
 
+	//Mat imageIP;
+	//ImageProcess(image, imageIP);
+
 	//Mat objectWS;		//分水嶺演算法(32SC1(BW))
-	//BWWatershed(image, objectOpen, area, objectWS);
+	//BWWatershed(imageIP, objectSeed, objectOpen, objectWS);
 
 	//Mat objectWS_L, objectWS_I;		//輸出用(8UC3、8UC3)
 	//DrawLabel(objectWS, objectWS_L);
 	//DrawEdge(objectWS, image, objectWS_I);
 
-	//string  objectWS_B_file = filepath + "\\" + infilename + "_16.0_WS_O(B).png";			//分水嶺演算法(二值)
+	//string  objectWS_B_file = filepath + "\\" + infilename + "_18.0_WS_O(B).png";			//分水嶺演算法(二值)
 	//imwrite(objectWS_B_file, objectWS);
-	//string  objectWS_L_file = filepath + "\\" + infilename + "_16.1_WS_O(L).png";			//分水嶺演算法(標籤)
+	//string  objectWS_L_file = filepath + "\\" + infilename + "_18.1_WS_O(L).png";			//分水嶺演算法(標籤)
 	//imwrite(objectWS_L_file, objectWS_L);
-	//string  objectWS_I_file = filepath + "\\" + infilename + "_16.2_WS_O(I).png";			//分水嶺演算法(疊圖)
+	//string  objectWS_I_file = filepath + "\\" + infilename + "_18.2_WS_O(I).png";			//分水嶺演算法(疊圖)
 	//imwrite(objectWS_I_file, objectWS_I);
 
 	return 0;

@@ -299,8 +299,10 @@ void makecolorbar(vector<Scalar> &colorbar)
 /*將灰階圖片轉以色條顯示*/
 void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage, int upperbound, int lowerbound)
 {
-	Mat grayImage = _grayImage.getMat();
-	CV_Assert(grayImage.type() == CV_8UC1);
+	Mat grayImage;
+	Mat temp = _grayImage.getMat();
+	if (temp.type() == CV_16SC1) { temp.convertTo(grayImage, CV_32FC1); }
+	else { grayImage = _grayImage.getMat(); }
 
 	_colorbarImage.create(grayImage.size(), CV_8UC3);
 	Mat colorbarImage = _colorbarImage.getMat();
@@ -310,27 +312,50 @@ void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage, int upperbo
 
 	int maxrad = upperbound - lowerbound + 1;
 
-	for (int i = 0; i < colorbarImage.rows; ++i)
-		for (int j = 0; j < colorbarImage.cols; ++j)
-		{
-			uchar *data = colorbarImage.data + colorbarImage.step[0] * i + colorbarImage.step[1] * j;
-
-			float fk = (1 - (float)grayImage.at<uchar>(i, j) / (float)maxrad) * (colorbar.size() - 1);  //計算灰度值對應之索引位置
-			int k0 = floor(fk);
-			int k1 = ceil(fk);
-			float f = fk - k0;
-
-			float col0 = 0.0f;
-			float col1 = 0.0f;
-			float col = 0.0f;
-			for (int b = 0; b < 3; b++)
+	if (grayImage.type() == CV_8UC1)
+		for (int i = 0; i < colorbarImage.rows; ++i)
+			for (int j = 0; j < colorbarImage.cols; ++j)
 			{
-				col0 = colorbar[k0][b] / 255.0f;
-				col1 = colorbar[k1][b] / 255.0f;
-				col = (1 - f) * col0 + f * col1;
-				data[2 - b] = (int)(255.0f * col);
+				uchar *data = colorbarImage.data + colorbarImage.step[0] * i + colorbarImage.step[1] * j;
+
+				float fk = (1 - (float)grayImage.at<uchar>(i, j) / (float)maxrad) * (colorbar.size() - 1);  //計算灰度值對應之索引位置
+				int k0 = floor(fk);
+				int k1 = ceil(fk);
+				float f = fk - k0;
+
+				float col0 = 0.0f;
+				float col1 = 0.0f;
+				float col = 0.0f;
+				for (int b = 0; b < 3; b++)
+				{
+					col0 = colorbar[k0][b] / 255.0f;
+					col1 = colorbar[k1][b] / 255.0f;
+					col = (1 - f) * col0 + f * col1;
+					data[2 - b] = (int)(255.0f * col);
+				}
 			}
-		}
+	else
+		for (int i = 0; i < colorbarImage.rows; ++i)
+			for (int j = 0; j < colorbarImage.cols; ++j)
+			{
+				uchar *data = colorbarImage.data + colorbarImage.step[0] * i + colorbarImage.step[1] * j;
+
+				float fk = (1 - grayImage.at<float>(i, j) / (float)maxrad) * (colorbar.size() - 1);  //計算灰度值對應之索引位置
+				int k0 = floor(fk);
+				int k1 = ceil(fk);
+				float f = fk - k0;
+
+				float col0 = 0.0f;
+				float col1 = 0.0f;
+				float col = 0.0f;
+				for (int b = 0; b < 3; b++)
+				{
+					col0 = colorbar[k0][b] / 255.0f;
+					col1 = colorbar[k1][b] / 255.0f;
+					col = (1 - f) * col0 + f * col1;
+					data[2 - b] = (int)(255.0f * col);
+				}
+			}
 }
 
 /*將圖片轉以色環方向場顯示(輸入梯度場或梯度方向)*/
@@ -533,8 +558,6 @@ void DrawGrayBar(InputArray _field, OutputArray _grayField)
 	_grayField.create(field.size(), CV_8UC1);
 	Mat grayField = _grayField.getMat();
 
-
-
 	// determine motion range:  
 	float maxvalue = 0;
 
@@ -589,8 +612,11 @@ void DrawGrayBar(InputArray _field, OutputArray _grayField)
 /*將結果以標籤顯示*/
 void DrawLabel(InputArray _bwImage, OutputArray _combineLabel)
 {
-	Mat bwImage = _bwImage.getMat();
-	CV_Assert(bwImage.type() == CV_8UC1);
+	Mat bwImage;
+	Mat temp = _bwImage.getMat();
+	CV_Assert(temp.type() == CV_8UC1 || temp.type() == CV_32FC1);
+	if (temp.type() == CV_32FC1) { temp.convertTo(bwImage, CV_8UC1); }
+	else { bwImage = temp; }
 
 	_combineLabel.create(bwImage.size(), CV_8UC3);
 	Mat combineLabel = _combineLabel.getMat();
@@ -2081,6 +2107,23 @@ void HysteresisThreshold(InputArray _gradm, OutputArray _bwLine, int upperThresh
 	labeltable = nullptr;
 }
 
+/*影像處理*/
+void ImageProcess(InputArray _image, OutputArray _imageIP)
+{
+	Mat image = _image.getMat();
+	CV_Assert(image.type() == CV_8UC3);
+
+	_imageIP.create(image.size(), CV_8UC3);
+	Mat imageIP = _imageIP.getMat();
+
+	for (int i = 0; i < imageIP.rows; ++i)
+		for (int j = 0; j < imageIP.cols; ++j)
+			for (int k = 0; k < 3; ++k)
+			{
+				imageIP.at<Vec3b>(i, j)[k] = 255 - image.at<Vec3b>(i, j)[k];
+			}
+}
+
 /*清除孤立點*/
 void BWClearIsoPoint(InputArray _bwLine, OutputArray _bwLineCP, int border, int iter, bool flagT)
 {
@@ -2205,8 +2248,11 @@ void BWWatershed(InputArray _srcImage, InputArray _bwSeed, InputArray _bwObject,
 	CV_Assert(srcImage.type() == CV_8UC1 || srcImage.type() == CV_8UC3);
 	if (srcImage.type() == CV_8UC1) { cvtColor(srcImage, srcImage, CV_GRAY2BGR); }
 
-	Mat bwSeed = _bwSeed.getMat();
-	CV_Assert(bwSeed.type() == CV_8UC1);
+	Mat bwSeed;
+	Mat temp = _bwSeed.getMat();
+	CV_Assert(temp.type() == CV_8UC1 || temp.type() == CV_32FC1);
+	if (temp.type() == CV_32FC1) { temp.convertTo(bwSeed, CV_8UC1); }
+	else { bwSeed = temp; }
 
 	Mat bwObject = _bwObject.getMat();
 	CV_Assert(bwObject.type() == CV_8UC1);
@@ -2216,7 +2262,7 @@ void BWWatershed(InputArray _srcImage, InputArray _bwSeed, InputArray _bwObject,
 	bwObject.copyTo(bwWatershed);
 
 	Mat seedLabels;
-	int num = bwlabel(bwSeed, seedLabels, 4);
+	int num = bwlabel(bwSeed, seedLabels, 8);
 
 	Mat label(seedLabels.rows, seedLabels.cols, CV_32SC1);
 
