@@ -252,7 +252,7 @@ int main()
 	/*開運算*/
 
 	Mat objectOpen;
-	Mat element = getStructuringElement(MORPH_ELLIPSE, Size(5, 5));
+	Mat element = (Mat_<uchar>(5, 5) << 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0);
 	morphologyEx(objectCOM, objectOpen, MORPH_OPEN, element);
 
 	Mat objectOpen_L, objectOpen_I;			//輸出用(8UC3、8UC3)
