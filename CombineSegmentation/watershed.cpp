@@ -105,6 +105,7 @@ void LocalMinimaDetection(InputArray _objectDT, OutputArray _label, priority_que
 	delete mpFifo;
 }
 
+/*檢查相鄰區域是否存在標籤*/
 bool CheckForAlreadyLabeledNeighbours(int x, int y, Mat &label, Point2i &outLabeledNeighbour, int &outLabel)
 {
 	for (int dy = -1; dy <= 1; dy++)
@@ -119,6 +120,7 @@ bool CheckForAlreadyLabeledNeighbours(int x, int y, Mat &label, Point2i &outLabe
 	return false;
 }
 
+/*檢查是否為分水嶺*/
 bool CheckIfPixelIsWatershed(int x, int y, Mat &label, Point2i &inLabeledNeighbour, int &inLabelOfNeighbour)
 {
 	for (int dy = -1; dy <= 1; dy++)
@@ -131,21 +133,6 @@ bool CheckIfPixelIsWatershed(int x, int y, Mat &label, Point2i &inLabeledNeighbo
 				}
 	return false;
 }
-
-//void UpdateLabel(int x, int y, Mat &srcImage, Mat &label, int &inLabelOfNeighbour, priority_queue<PixelElement, vector<PixelElement>, mycomparison> &mvSortedQueue)
-//{
-//	// from c) assign label of neighbour
-//	label.at<int>(y, x) = inLabelOfNeighbour;
-//
-//	for (int dy = -1; dy <= 1; dy++)
-//		for (int dx = -1; dx <= 1; dx++)
-//			if ((x + dx >= 0) && (x + dx < label.cols) && (y + dy >= 0) && (y + dy < label.rows))
-//				if (label.at<int>(y + dy, x + dx) == LABEL_NOLOCALMINIMUM)
-//				{
-//					label.at<int>(y + dy, x + dx) = LABEL_PROCESSING;
-//					mvSortedQueue.push(PixelElement(srcImage.at<float>(y + dy, x + dx), x + dx, y + dy));
-//				}
-//}
 
 /*分水嶺轉換*/
 void WatershedTransform(InputArray _objectDT, OutputArray _objectWT, OutputArray _label)

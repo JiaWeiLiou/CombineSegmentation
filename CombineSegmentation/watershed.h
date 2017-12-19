@@ -58,9 +58,8 @@ void LocalMinimaDetection(InputArray _objectDT, OutputArray _label, priority_que
 /*檢查相鄰區域是否存在標籤*/
 bool CheckForAlreadyLabeledNeighbours(int x, int y, Mat &label, Point2i &outLabeledNeighbour, int &outLabel);
 
+/*檢查是否為分水嶺*/
 bool CheckIfPixelIsWatershed(int x, int y, Mat &label, Point2i &inLabeledNeighbour, int &inLabelOfNeighbour);
-
-//void UpdateLabel(int x, int y, Mat &srcImage, Mat &label, int &inLabelOfNeighbour, priority_queue<PixelElement, vector<PixelElement>, mycomparison> &mvSortedQueue);
 
 /*分水嶺轉換*/
 void WatershedTransform(InputArray _objectDT, OutputArray _objectWT, OutputArray _label);
