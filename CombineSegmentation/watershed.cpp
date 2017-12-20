@@ -52,7 +52,7 @@ void LocalMinimaDetection(InputArray _objectDT, OutputArray _label, priority_que
 													if (objectDT.at<float>(yh + dyh, xh + dxh) == objectDT.at<float>(y, x))
 													{
 														label.at<int>(yh + dyh, xh + dxh) = LABEL_NOLOCALMINIMUM;
-														mpFifo->push(Point2i(x + dx, y + dy));
+														mpFifo->push(Point2i(xh + dxh, yh + dyh));
 													}
 												}
 								}
@@ -61,10 +61,6 @@ void LocalMinimaDetection(InputArray _objectDT, OutputArray _label, priority_que
 
 			}
 	delete mpFifo;
-
-	for (int y = 0; y < objectDT.rows; ++y)
-		for (int x = 0; x < objectDT.cols; ++x)
-			if (objectDT.at<float>(y, x) == 0) { label.at<int>(y, x) = LABEL_NOLOCALMINIMUM; }
 
 	mpFifo = new queue<Point2i>();
 	int mNumberOfLabels = LABEL_MINIMUM;
