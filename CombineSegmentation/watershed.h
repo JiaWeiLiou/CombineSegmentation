@@ -53,7 +53,7 @@ public:
 };
 
 /*區域最小值*/
-void LocalMinimaDetection(InputArray _objectDT, OutputArray _label, priority_queue<PixelElement, vector<PixelElement>, mycomparison> &mvSortedQueue);
+void LocalMinimaDetection(InputArray _objectDT, OutputArray _label, priority_queue<PixelElement, vector<PixelElement>, mycomparison> &mvSortedQueue, float precision = 1.0f);
 
 /*檢查相鄰區域是否存在標籤*/
 bool CheckForAlreadyLabeledNeighbours(int x, int y, Mat &label, Point2i &outLabeledNeighbour, int &outLabel);
@@ -62,4 +62,4 @@ bool CheckForAlreadyLabeledNeighbours(int x, int y, Mat &label, Point2i &outLabe
 bool CheckIfPixelIsWatershed(int x, int y, Mat &label, Point2i &inLabeledNeighbour, int &inLabelOfNeighbour);
 
 /*分水嶺轉換*/
-void WatershedTransform(InputArray _objectDT, OutputArray _objectWT, OutputArray _label);
+void WatershedTransform(InputArray _objectDT, OutputArray _objectWT, OutputArray _label, float precision = 1.0f);

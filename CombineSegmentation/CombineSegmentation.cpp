@@ -288,7 +288,7 @@ int main()
 
 	Mat objectWT;
 	Mat label;
-	WatershedTransform(objectDT, objectWT, label);
+	WatershedTransform(objectDT, objectWT, label, 1);
 	string objectWT_B_file = filepath + "\\" + infilename + "_17.1_WT_O(L).png";			//分水嶺轉換(二值)
 	imwrite(objectWT_B_file, objectWT);
 

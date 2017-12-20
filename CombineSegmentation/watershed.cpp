@@ -9,7 +9,7 @@ PixelElement::PixelElement(float i, int j, int k)
 }
 
 /*跋办程*/
-void LocalMinimaDetection(InputArray _objectDT, OutputArray _label, priority_queue<PixelElement, vector<PixelElement>, mycomparison> &mvSortedQueue)
+void LocalMinimaDetection(InputArray _objectDT, OutputArray _label, priority_queue<PixelElement, vector<PixelElement>, mycomparison> &mvSortedQueue, float precision)
 {
 	Mat objectDT = _objectDT.getMat();
 	CV_Assert(objectDT.type() == CV_32FC1);
@@ -31,7 +31,7 @@ void LocalMinimaDetection(InputArray _objectDT, OutputArray _label, priority_que
 					for (int dx = -1; dx <= 1; ++dx)
 						if ((x + dx >= 0) && (x + dx < objectDT.cols) && (y + dy >= 0) && (y + dy < objectDT.rows))
 						{
-							if (objectDT.at<float>(y, x) > objectDT.at<float>(y + dy, x + dx))  // If pe2.value < pe1.value, pe1 is not a local minimum
+							if (floor(objectDT.at<float>(y, x) / precision) > floor(objectDT.at<float>(y + dy, x + dx) / precision))  // If pe2.value < pe1.value, pe1 is not a local minimum
 							{
 								label.at<int>(y, x) = LABEL_NOLOCALMINIMUM;
 								mpFifo->push(Point2i(x, y));
@@ -49,7 +49,7 @@ void LocalMinimaDetection(InputArray _objectDT, OutputArray _label, priority_que
 											if ((xh + dxh >= 0) && (xh + dxh < objectDT.cols) && (yh + dyh >= 0) && (yh + dyh < objectDT.rows))
 												if (label.at<int>(yh + dyh, xh + dxh) == LABEL_UNPROCESSED)
 												{
-													if (objectDT.at<float>(yh + dyh, xh + dxh) == objectDT.at<float>(y, x))
+													if (floor(objectDT.at<float>(yh + dyh, xh + dxh) / precision) == floor(objectDT.at<float>(y, x) / precision))
 													{
 														label.at<int>(yh + dyh, xh + dxh) = LABEL_NOLOCALMINIMUM;
 														mpFifo->push(Point2i(xh + dxh, yh + dyh));
@@ -131,7 +131,7 @@ bool CheckIfPixelIsWatershed(int x, int y, Mat &label, Point2i &inLabeledNeighbo
 }
 
 /*だ拉锣传*/
-void WatershedTransform(InputArray _objectDT, OutputArray _objectWT, OutputArray _label)
+void WatershedTransform(InputArray _objectDT, OutputArray _objectWT, OutputArray _label, float precision)
 {
 	Mat objectDT = _objectDT.getMat();
 	CV_Assert(objectDT.type() == CV_32FC1);
@@ -144,7 +144,7 @@ void WatershedTransform(InputArray _objectDT, OutputArray _objectWT, OutputArray
 
 	//Mat label;
 	priority_queue<PixelElement, vector<PixelElement>, mycomparison> mvSortedQueue;
-	LocalMinimaDetection(objectDT, label, mvSortedQueue);
+	LocalMinimaDetection(objectDT, label, mvSortedQueue, precision);
 
 	while (!mvSortedQueue.empty())
 	{
