@@ -251,7 +251,7 @@ int main()
 
 	/*¶}¹Bºâ*/
 
-	Mat objectOpen;
+	Mat objectOpen;			//¶}¹Bºâ(8UC1(BW))
 	Mat element = (Mat_<uchar>(5, 5) << 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0);
 	morphologyEx(objectCOM, objectOpen, MORPH_OPEN, element);
 
@@ -266,18 +266,33 @@ int main()
 	string  objectOpen_I_file = filepath + "\\" + infilename + "_15.2_OPEN_O(I).png";			//¶}¹Bºâ(Å|¹Ï)
 	imwrite(objectOpen_I_file, objectOpen_I);
 
+	/*¶ñ¸ÉªÅ¬}*/
+	Mat objectFH;			//¶ñ¸ÉªÅ¬}(8UC1(BW))
+	BWFillhole(objectOpen, objectFH);
+
+	Mat objectFH_L, objectFH_I;			//¿é¥X¥Î(8UC3¡B8UC3)
+	DrawLabel(objectFH, objectFH_L);
+	DrawEdge(objectFH, image, objectFH_I);
+
+	string  objectFH_B_file = filepath + "\\" + infilename + "_16.0_FH_O(B).png";			//¶ñ¸ÉªÅ¬}(¤G­È)
+	imwrite(objectFH_B_file, objectFH);
+	string  objectFH_L_file = filepath + "\\" + infilename + "_16.1_FH_O(L).png";			//¶ñ¸ÉªÅ¬}(¼ÐÅÒ)
+	imwrite(objectFH_L_file, objectFH_L);
+	string  objectFH_I_file = filepath + "\\" + infilename + "_16.2_FH_O(I).png";			//¶ñ¸ÉªÅ¬}(Å|¹Ï)
+	imwrite(objectFH_I_file, objectFH_I);
+
 	/*¶ZÂ÷Âà´«*/
 
 	Mat objectDT;		//¶ZÂ÷Âà´«(32FC1(BW))
-	distanceTransform(objectOpen, objectDT, CV_DIST_L2, 3);
+	distanceTransform(objectFH, objectDT, CV_DIST_L2, 3);
 
 	Mat objectDT_G, objectDT_R;		//¿é¥X¥Î(8UC1)
 	DrawGrayBar(objectDT, objectDT_G);
 	DrawColorBar(objectDT, objectDT_R);
 
-	string objectDT_G_file = filepath + "\\" + infilename + "_16.0_DT_O(G).png";			//¶ZÂ÷Âà´«(¦Ç¶¥)
+	string objectDT_G_file = filepath + "\\" + infilename + "_17.0_DT_O(G).png";			//¶ZÂ÷Âà´«(¦Ç¶¥)
 	imwrite(objectDT_G_file, objectDT_G);
-	string objectDT_R_file = filepath + "\\" + infilename + "_16.1_DT_O(R).png";			//¶ZÂ÷Âà´«(ÂÅ¬õ)
+	string objectDT_R_file = filepath + "\\" + infilename + "_17.1_DT_O(R).png";			//¶ZÂ÷Âà´«(ÂÅ¬õ)
 	imwrite(objectDT_R_file, objectDT_R);
 
 	/*´ú¸Õ*/

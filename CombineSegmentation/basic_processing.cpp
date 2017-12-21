@@ -2278,3 +2278,34 @@ void BWWatershed(InputArray _srcImage, InputArray _bwSeed, InputArray _bwObject,
 		for (int j = 0; j < label.cols; ++j)
 			if (label.at<int>(i, j) == -1) { bwWatershed.at<uchar>(i, j) = 0; }
 }
+
+/*¶ñ¸ÉªÅ¬}*/
+void BWFillhole(InputArray _bwImage, OutputArray _bwFillhole)
+{
+	Mat bwImage = _bwImage.getMat();
+	CV_Assert(bwImage.type() == CV_8UC1);
+	
+	_bwFillhole.create(bwImage.size(), CV_8UC1);
+	Mat bwFillhole = _bwFillhole.getMat();
+
+	Mat mask;
+	bwImage.copyTo(mask);
+	for (int i = 0; i < mask.cols; ++i) 
+	{
+		if (mask.at<uchar>(0, i) == 0) {	floodFill(mask, Point(i, 0), 255, 0, 10, 10, 8); }
+		if (mask.at<uchar>(mask.rows - 1, i) == 0) {	floodFill(mask, Point(i, mask.rows - 1), 255, 0, 10, 10, 8); }
+	}
+	for (int i = 0; i < mask.rows; ++i)
+	{
+		if (mask.at<uchar>(i, 0) == 0) { floodFill(mask, Point(0, i), 255, 0, 10, 10, 8); }
+		if (mask.at<uchar>(i, mask.cols - 1) == 0) { floodFill(mask, Point(mask.cols - 1, i), 255, 0, 10, 10, 8); }
+	}
+
+
+	// Compare mask with original.
+	bwImage.copyTo(bwFillhole);
+	for (int i = 0; i < mask.rows; ++i) 
+		for (int j = 0; j < mask.cols; ++j)
+			if (mask.at<uchar>(i, j) == 0)
+				bwFillhole.at<uchar>(i, j) = 255;
+}

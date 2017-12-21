@@ -141,5 +141,5 @@ void BWReverse(InputArray _bwImage, OutputArray _bwImageR);
 /*だ拉簍衡猭*/
 void BWWatershed(InputArray _srcImage, InputArray _bwSeed, InputArray _bwObject, OutputArray _bwWatershed);
 
-/*だ拉锣传*/
-void WatershedTransform(InputArray _srcImage, OutputArray _bwWatershed);
+/*瑌恶干*/
+void BWFillhole(InputArray _bwImage, OutputArray _bwFillhole);
