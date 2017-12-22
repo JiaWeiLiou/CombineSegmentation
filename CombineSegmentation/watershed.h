@@ -52,6 +52,18 @@ public:
 	}
 };
 
+/*產生種子點*/
+void GenerateSeed(InputArray _objectOpen, InputArray _objectDT, OutputArray _objectSeed, float H);
+
+/*加強產生最小值*/
+void ImposeMin(InputArray _objectOpen, InputArray _objectSeed, OutputArray _objectIM);
+
+/*H-min 轉換*/
+void HMinimaTransform(InputArray _objectDT, OutputArray _objectHMT, float H);
+
+/*影像形態學重建*/
+void Reconstruct(InputArray _marker, InputArray _mask, OutputArray _objectR);
+
 /*區域最小值*/
 void LocalMinimaDetection(InputArray _objectDT, OutputArray _label, priority_queue<PixelElement, vector<PixelElement>, mycomparison> &mvSortedQueue, float precision = 1.0f);
 

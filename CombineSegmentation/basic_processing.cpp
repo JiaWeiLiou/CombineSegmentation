@@ -645,7 +645,7 @@ void DrawLabel(InputArray _bwImage, OutputArray _combineLabel)
 				}
 }
 
-/*將邊緣偵測結果顯示在彩色圖像上*/
+/*將結果顯示在彩色圖像上*/
 void DrawEdge(InputArray _bwImage, InputArray _realImage, OutputArray _combineImage)
 {
 	Mat bwImage = _bwImage.getMat();
@@ -686,8 +686,8 @@ void DrawEdge(InputArray _bwImage, InputArray _realImage, OutputArray _combineIm
 				if (bwImage.at<uchar>(i, j) == 0)
 				{
 					combineImage.at<Vec3b>(i, j)[0] = 255;
-					combineImage.at<Vec3b>(i, j)[1] = 0;
-					combineImage.at<Vec3b>(i, j)[2] = 0;
+					combineImage.at<Vec3b>(i, j)[1] = realImage.at<Vec3b>(i, j)[1];
+					combineImage.at<Vec3b>(i, j)[2] = realImage.at<Vec3b>(i, j)[2];
 				}
 				else
 				{
@@ -2309,3 +2309,4 @@ void BWFillhole(InputArray _bwImage, OutputArray _bwFillhole)
 			if (mask.at<uchar>(i, j) == 0)
 				bwFillhole.at<uchar>(i, j) = 255;
 }
+

@@ -295,11 +295,25 @@ int main()
 	string objectDT_R_file = filepath + "\\" + infilename + "_17.1_DT_O(R).png";			//距離轉換(藍紅)
 	imwrite(objectDT_R_file, objectDT_R);
 
+	/*求取種子點*/
+
+	Mat objectSeed;		//距離轉換(32FC1(BW))
+	GenerateSeed(objectOpen, objectDT, objectSeed, 10);
+
+	Mat objectHMT_G, objectHMT_R;		//輸出用(8UC1)
+	DrawGrayBar(objectHMT, objectHMT_G);
+	DrawColorBar(objectHMT, objectHMT_R);
+
+	string objectHMT_G_file = filepath + "\\" + infilename + "_18.0_HMT_O(G).png";			//距離轉換(灰階)
+	imwrite(objectHMT_G_file, objectHMT_G);
+	string objectHMT_R_file = filepath + "\\" + infilename + "_18.1_HMT_O(R).png";			//距離轉換(藍紅)
+	imwrite(objectHMT_R_file, objectHMT_R);
+
 	/*測試*/
 
-	for (int i = 0; i < objectDT.rows; ++i)
-		for (int j = 0; j < objectDT.cols; ++j)
-			objectDT.at<float>(i, j) = -objectDT.at<float>(i, j);
+	for (int i = 0; i < objectHMT.rows; ++i)
+		for (int j = 0; j < objectHMT.cols; ++j)
+			objectHMT.at<float>(i, j) = -objectHMT.at<float>(i, j);
 
 	Mat objectWT;
 	Mat label;

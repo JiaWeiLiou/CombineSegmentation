@@ -8,6 +8,51 @@ PixelElement::PixelElement(float i, int j, int k)
 	y = k;
 }
 
+/*H-min 轉換*/
+void HMinimaTransform(InputArray _objectDT, OutputArray _objectHMT, float H)
+{
+	Mat objectDT = _objectDT.getMat();
+	CV_Assert(objectDT.type() == CV_32FC1);
+
+	_objectHMT.create(objectDT.size(), CV_32FC1);
+	Mat objectHMT = _objectHMT.getMat();
+
+	Mat mask = objectDT;
+
+	Mat marker(objectDT.size(), CV_32FC1);
+	for (int i = 0; i < mask.rows; ++i)
+		for (int j = 0; j < mask.cols; ++j)
+			marker.at<float>(i, j) = mask.at<float>(i, j) - H;
+
+	Reconstruct(marker, mask, objectHMT);
+}
+
+/*影像形態學重建*/
+void Reconstruct(InputArray _marker, InputArray _mask, OutputArray _objectR)
+{
+	Mat marker = _marker.getMat();
+	CV_Assert(marker.type() == CV_32FC1);
+
+	Mat mask = _mask.getMat();
+	CV_Assert(mask.type() == CV_32FC1);
+
+	_objectR.create(mask.size(), CV_32FC1);
+	Mat objectR = _objectR.getMat();
+
+	min(marker, mask, objectR);
+	dilate(objectR, objectR, Mat());
+	min(objectR, mask, objectR);
+	Mat temp1 = Mat(marker.size(), CV_8UC1);
+	Mat temp2 = Mat(marker.size(), CV_8UC1);
+	do
+	{
+		objectR.copyTo(temp1);
+		dilate(objectR, objectR, Mat());
+		min(objectR, mask, objectR);
+		compare(temp1, objectR, temp2, CV_CMP_NE);
+	} while (sum(temp2).val[0] != 0);
+}
+
 /*區域最小值*/
 void LocalMinimaDetection(InputArray _objectDT, OutputArray _label, priority_queue<PixelElement, vector<PixelElement>, mycomparison> &mvSortedQueue, float precision)
 {
