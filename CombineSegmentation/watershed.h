@@ -52,12 +52,6 @@ public:
 	}
 };
 
-/*產生種子點*/
-void GenerateSeed(InputArray _objectOpen, InputArray _objectDT, OutputArray _objectSeed, float H);
-
-/*加強產生最小值*/
-void ImposeMin(InputArray _objectOpen, InputArray _objectSeed, OutputArray _objectIM);
-
 /*H-min 轉換*/
 void HMinimaTransform(InputArray _objectDT, OutputArray _objectHMT, float H);
 
@@ -67,11 +61,23 @@ void Reconstruct(InputArray _marker, InputArray _mask, OutputArray _objectR);
 /*區域最小值*/
 void LocalMinimaDetection(InputArray _objectDT, OutputArray _label, priority_queue<PixelElement, vector<PixelElement>, mycomparison> &mvSortedQueue, float precision = 1.0f);
 
+/*最小值*/
+void MinimaDetection(InputArray _objectIM, OutputArray _label, priority_queue<PixelElement, vector<PixelElement>, mycomparison> &mvSortedQueue);
+
 /*檢查相鄰區域是否存在標籤*/
 bool CheckForAlreadyLabeledNeighbours(int x, int y, Mat &label, Point2i &outLabeledNeighbour, int &outLabel);
 
 /*檢查是否為分水嶺*/
 bool CheckIfPixelIsWatershed(int x, int y, Mat &label, Point2i &inLabeledNeighbour, int &inLabelOfNeighbour);
 
+/*擴展區域最小值*/
+void ExtendLocalMinimaDetection(InputArray _objectDT, OutputArray _objectEM, float H);
+
+/*增加未標記之標籤*/
+void AddLabel(InputArray _object, InputArray _objectSeed, OutputArray _objectAL);
+
+/*加深低窪區*/
+void ImposeMinima(InputArray _objectDT, InputArray _objectAL, OutputArray _objectIM);
+
 /*分水嶺轉換*/
-void WatershedTransform(InputArray _objectDT, OutputArray _objectWT, OutputArray _label, float precision = 1.0f);
+void WatershedTransform(InputArray _object, InputArray _objectIM, OutputArray _objectWT);

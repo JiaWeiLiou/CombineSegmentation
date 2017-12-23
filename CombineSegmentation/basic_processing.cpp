@@ -699,6 +699,27 @@ void DrawEdge(InputArray _bwImage, InputArray _realImage, OutputArray _combineIm
 	}
 }
 
+/*將種子點顯示在原物件上*/
+void DrawSeed(InputArray _object, InputArray _objectSeed, OutputArray _combineSeed)
+{
+	Mat object = _object.getMat();
+	CV_Assert(object.type() == CV_8UC1);
+
+	Mat objectSeed = _objectSeed.getMat();
+	CV_Assert(objectSeed.type() == CV_8UC1);
+
+	_combineSeed.create(object.size(), CV_8UC1);
+	Mat combineSeed = _combineSeed.getMat();
+
+	for (int i = 0; i < combineSeed.rows; ++i)
+		for (int j = 0; j < combineSeed.cols; ++j)
+		{
+			if (object.at<uchar>(i, j) == 255) { combineSeed.at<uchar>(i, j) = 128; }
+			if (objectSeed.at<uchar>(i, j) == 255) { combineSeed.at<uchar>(i, j) = 255; }
+			if (object.at<uchar>(i, j) == 0) { combineSeed.at<uchar>(i, j) = 0; }
+		}
+}
+
 /*圖層混合模式*/
 void LayerMix(InputArray _grayImage, InputArray _blurImage, OutputArray _mixImage)
 {

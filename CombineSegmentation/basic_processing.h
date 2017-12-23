@@ -54,6 +54,9 @@ void DrawLabel(InputArray _bwImage, OutputArray _combineLabel);
 /*將結果顯示在彩色圖像上*/
 void DrawEdge(InputArray _bwImage, InputArray _realImage, OutputArray _combineImage);
 
+/*將種子點顯示在原物件上*/
+void DrawSeed(InputArray _object, InputArray _objectSeed, OutputArray _combineSeed);
+
 /*圖層混合模式*/
 void LayerMix(InputArray _grayImage, InputArray _blurImage, OutputArray _mixImage);
 
