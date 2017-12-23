@@ -386,6 +386,8 @@ void AddLabel(InputArray _object, InputArray _objectSeed, OutputArray _objectAL)
 			{ 
 				objectAL.at<uchar>(i, j) = 255; 
 			}
+	free(labeltable);
+	labeltable = nullptr;
 }
 
 /*加深低窪區*/

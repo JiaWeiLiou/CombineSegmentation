@@ -385,7 +385,7 @@ int main()
 	/*―耎甶跋办程2*/
 
 	Mat objectEM2;		//―耎甶跋办程2(8UC1(BW))
-	ExtendLocalMinimaDetection(objectFH2, objectEM2, 25);
+	ExtendLocalMinimaDetection(objectFH2, objectEM2, 5);
 
 	Mat objectEM2_S;		//块ノ(8UC1)
 	DrawSeed(objectWT, objectEM2, objectEM2_S);
